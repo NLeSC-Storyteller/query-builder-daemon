@@ -1,0 +1,36 @@
+// Build file which can only run when dependencies and plugins have been downloaded.
+
+//    PLUGINS
+// ==============
+plugins {
+    // Changes in the plugins section should be also be applied to build.offline.gradle
+    id 'java'
+    id 'distribution'
+    // publishing
+    id 'maven-publish'
+    id 'com.jfrog.bintray' version '1.7.3'
+    // ide
+    id 'idea'
+    id 'eclipse'
+}
+
+//  DEPENDENCIES
+// ==============
+
+// Online dependencies
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    // Libaries
+    compile group: 'nl.esciencecenter.xenon', name: 'xenon', version: '1.1.0'
+
+    // Runtime dependencies
+    runtime group: 'ch.qos.logback', name: 'logback-core', version: '1.0.11'
+    runtime group: 'ch.qos.logback', name: 'logback-classic', version: '1.0.11'
+
+    // Testing dependencies
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+}
