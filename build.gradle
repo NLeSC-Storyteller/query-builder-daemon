@@ -17,6 +17,21 @@ plugins {
 //  DEPENDENCIES
 // ==============
 
+version = '0.1'
+
+//create a single Jar with all dependencies
+task fatJar(type: Jar) {
+	manifest {
+        attributes 'Implementation-Title': 'QueryBuilder daemon fat jar',
+		'Implementation-Version': version,
+		'Main-Class': 'nl.esciencecenter.storyteller.QueryBuilderDaemon'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+
 // Online dependencies
 repositories {
     mavenCentral()
@@ -25,6 +40,7 @@ repositories {
 
 dependencies {
     // Libaries
+    compile "com.sparkjava:spark-core:2.5.4" 
     compile group: 'nl.esciencecenter.xenon', name: 'xenon', version: '1.1.0'
 
     // Runtime dependencies
