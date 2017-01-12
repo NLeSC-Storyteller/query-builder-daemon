@@ -1,4 +1,5 @@
-ROOT=/home/romulo/maarten/StoryTeller
+#!/bin/bash
+ROOT=
 LIB="$ROOT"/target
 DB="$ROOT"../query-builder-server
 RESOURCES="$( cd $ROOT && cd .. && pwd)"/vua-resources
