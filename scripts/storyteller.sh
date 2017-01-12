@@ -1,3 +1,4 @@
+#!/bin/bash
 ROOT=/home/jason/Workspace/StoryTeller
 LIB="$ROOT"/target
 RESOURCES="$( cd $ROOT && cd .. && pwd)"/vua-resources
