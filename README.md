@@ -6,6 +6,6 @@ To compile use:
 
 Then to run
 
-   cd ./build/install/query-builder-daemon
+   cd ./build/install/query-builder-daemon  
    ./bin/query-builder-daemon
 
