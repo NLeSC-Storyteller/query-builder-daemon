@@ -17,6 +17,7 @@
 package nl.esciencecenter.storyteller;
 
 import static spark.Spark.get;
+import static spark.Spark.post;
 
 import java.net.URISyntaxException;
 import java.util.Collections;
@@ -72,12 +73,16 @@ public class QueryBuilderDaemon {
           return getStatus();  
         }); 
         
-        get("/submit", (req, res) -> {
+        post("/submit", (req, res) -> {
             
             String id = req.queryParams("id");
             String query = req.queryParams("query");
 
-            return createAndSubmitJob(new Query(id, query));
+            if (id != null && query != null) { 
+                return createAndSubmitJob(new Query(id, query));
+            } else { 
+               return "INVALID";
+            }
         });
     }
 
