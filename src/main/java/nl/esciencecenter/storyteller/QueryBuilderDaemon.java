@@ -96,7 +96,7 @@ public class QueryBuilderDaemon {
         // We can now create a JobDescription for the job we want to run.
         JobDescription description = new JobDescription();
         description.setQueueName("multi");
-        description.setExecutable("/bin/bash");
+        description.setExecutable("c:/Program Files/Git/git-bash.exe");
         description.setArguments("storyteller.sh", query.getID(), query.getQuery());
         description.setStdout(query.getID() + "-stdout.txt");
         description.setStderr(query.getID() + "-stderr.txt");

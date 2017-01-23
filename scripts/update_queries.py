@@ -13,15 +13,15 @@ try:
     cur = con.cursor()    
     cur.execute('SELECT query from queries')
     stmt = "update queries set finished=0, result=? where id=" + str (sys.argv[2])
-    print stmt
+    print(stmt)
     cur.execute(stmt, [lite.Binary(ablob)])
 
     #cur.execute('select query, finished from queries')
     #data = cur.fetchone()
     #print "SQLite query result: %s" % str(data)
 
-except lite.Error, e:
-    print "Error %s:" % e.args[0]
+except lite.Error as e:
+    print("Error %s:" % e.args[0])
     sys.exit(1)
 
 finally:
