@@ -11,7 +11,7 @@ try:
     ablob = input_file.read()
     con = lite.connect(str(sys.argv[1]))
     cur = con.cursor()   
-    stmt = "update queries set sstatus=1, result=? where id=" + str (sys.argv[2])
+    stmt = "update queries set status=1, result=? where id=" + str (sys.argv[2])
     print stmt
     cur.execute(stmt, [lite.Binary(ablob)])
     if (cur.rowcount == 0):
