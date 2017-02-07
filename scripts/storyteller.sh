@@ -1,9 +1,9 @@
 JAVA_HOME="C:/ProgramData/Oracle/Java/javapath"
-PYTHON_HOME="C:/Users/Maarten/AppData/Local/Programs/Python/Python36-32"
-STORYTELLER_PATH="c:/Users/Maarten/workspace/StoryTeller"
+PYTHON_HOME="C:/Users/maart/AppData/Local/Programs/Python/Python36-32"
+STORYTELLER_PATH="c:/Users/maart/workspace/StoryTeller"
 
 LIB="$STORYTELLER_PATH"/target
-DB="$STORYTELLER_PATH"/../query-builder-server/data/storyteller5.db
+DB="$STORYTELLER_PATH"/../query-builder-server/data/storyteller6.db
 RESOURCES="$( cd $STORYTELLER_PATH && cd .. && pwd)"/vua-resources
 
 SERVER="http://145.100.58.139:50053"
