@@ -13,12 +13,12 @@ def update_table(db_name, query_id, input_file_name):
     con = None
     try:
         input_file = open(str(input_file_name), "rb")
-        ablob = input_file.read()
+        # ablob = input_file.read()
         con = lite.connect(str(db_name))
         cur = con.cursor()
         stmt = "update queries set status=1, result=? where id=" + str(query_id)
         print(stmt)
-        cur.execute(stmt, [ablob])
+        cur.execute(stmt, [str(input_file_name)])
         if cur.rowcount == 0:
             stmt = "select count(status) from queries where id = " + str(query_id)
             cur.execute(stmt)
@@ -35,7 +35,7 @@ def update_table(db_name, query_id, input_file_name):
                 print(err)
                 stmt = """insert into queries (id, status, result)
                         values(""" + str(query_id) + """, 2, ?)"""
-                cur.execute(stmt, [err])
+                cur.execute(stmt, [lite.Binary(err)])
         else:
             print("Update status to SUCCEEDED for query id " + str(query_id) + " succeeded")
 
@@ -45,10 +45,10 @@ def update_table(db_name, query_id, input_file_name):
         rows = cur.fetchall()
         if len(rows) == 1:
             stmt = "update queries set status=2, result=? where id=" + str(query_id)
-            cur.execute(stmt, [err.args[0]])
+            cur.execute(stmt, [lite.Binary(err.args[0])])
         else:
             stmt = "insert into queries (id, status, result) values(" + str(query_id) + ", 2, ?)"
-            cur.execute(stmt, [err.args[0]])
+            cur.execute(stmt, [lite.Binary(err.args[0])])
         print("Error %s:" % err.args[0])
         sys.exit(1)
 
