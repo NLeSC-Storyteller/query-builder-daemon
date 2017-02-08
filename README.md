@@ -5,6 +5,7 @@ To compile use:
 ```bash
 # (needs Java version 8)
 ./gradlew installDist
+```
 
 Then to run
 
