@@ -97,7 +97,7 @@ public class QueryBuilderDaemon {
         JobDescription description = new JobDescription();
         description.setQueueName("multi");
         description.setExecutable("/bin/bash");
-        description.setArguments("storyteller.sh", query.getID(), query.getQuery());
+        description.setArguments("/src/query-builder-daemon/scripts/storyteller.sh", query.getID(), query.getQuery());
         description.setStdout(query.getID() + "-stdout.txt");
         description.setStderr(query.getID() + "-stderr.txt");
        
