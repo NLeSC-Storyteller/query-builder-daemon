@@ -78,6 +78,12 @@ public class QueryBuilderDaemon {
             String id = req.queryParams("id");
             String query = req.queryParams("query");
 
+            if (id == null || id.trim().length() == 0) { 
+                // do something!
+            }
+            
+            
+            
             if (id != null && query != null) { 
                 return createAndSubmitJob(new Query(id, query));
             } else { 
