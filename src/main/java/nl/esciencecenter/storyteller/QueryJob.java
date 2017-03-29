@@ -16,17 +16,14 @@
 
 package nl.esciencecenter.storyteller;
 
-import nl.esciencecenter.xenon.jobs.Job;
-
 /**
  */
-public class Query {
+public class QueryJob extends GenericJob {
     
     private String id;
     private String query;
-    private Job job;
     
-    public Query(String id, String query) {
+    public QueryJob(String id, String query) {
         super();
         this.id = id;
         this.query = query;
@@ -38,13 +35,5 @@ public class Query {
     
     public String getQuery() { 
         return query;
-    }
-    
-    public void setJob(Job job) { 
-        this.job = job;
-    }
-    
-    public Job getJob() { 
-        return job;
     }
 }

@@ -47,10 +47,12 @@ public class QueryBuilderDaemon {
     private Jobs jobs;
     private Files files;
     private Scheduler scheduler;
-    private List<Query> running;
+    private List<GenericJob> running;
     
     private AtomicInteger finishedQueries = new AtomicInteger(0);
     private AtomicInteger failedQueries = new AtomicInteger(0);
+
+    private String scriptsBasePath = "/src/query-builder-daemon/scripts/";
     
     public QueryBuilderDaemon() throws XenonException, URISyntaxException { 
         
@@ -79,10 +81,28 @@ public class QueryBuilderDaemon {
             String query = req.queryParams("query");
 
             if (id != null && query != null) { 
-                return createAndSubmitJob(new Query(id, query));
+                return createAndSubmitJob(new QueryJob(id, query));
             } else { 
                return "INVALID";
             }
+        });
+        
+        post("/clearall", (req, res) -> {            
+            return createAndSubmitJob(new ClearAllJob());            
+        });
+        
+        post("/clearuser", (req, res) -> {
+            String username = req.queryParams("username");
+
+            if (username != null) { 
+                return createAndSubmitJob(new ClearUserJob(username));
+            } else { 
+               return "INVALID";
+            }           
+        });
+        
+        post("/rebuild", (req, res) -> {
+            return createAndSubmitJob(new RebuildDatabaseJob());       
         });
     }
 
@@ -91,24 +111,76 @@ public class QueryBuilderDaemon {
                 "\nQueries failed " + failedQueries.get();  
     }
     
-    private JobDescription createJobDescription(Query query) { 
+    private JobDescription createQueryJobDescription(QueryJob job) { 
+        System.out.println("Submitting query " + job.getID() + "\"" + job.getQuery() + "\"");
 
         // We can now create a JobDescription for the job we want to run.
         JobDescription description = new JobDescription();
         description.setQueueName("multi");
         description.setExecutable("/bin/bash");
-        description.setArguments("/src/query-builder-daemon/scripts/storyteller.sh", query.getID(), query.getQuery());
-        description.setStdout(query.getID() + "-stdout.txt");
-        description.setStderr(query.getID() + "-stderr.txt");
+        description.setArguments(scriptsBasePath+"storyteller.sh", job.getID(), job.getQuery());
+        description.setStdout(job.getID() + "-stdout.txt");
+        description.setStderr(job.getID() + "-stderr.txt");
        
         return description;
     }
     
-    private String createAndSubmitJob(Query query) { 
-        
-        System.out.println("Submitting job " + query.getID() + "\"" + query.getQuery() + "\"");
-        
-        JobDescription description = createJobDescription(query);
+    private JobDescription createClearAllJobDescription(ClearAllJob job) { 
+        System.out.println("Clearing all jobs");
+
+        // We can now create a JobDescription for the job we want to run.
+        JobDescription description = new JobDescription();
+        description.setQueueName("multi");
+        description.setExecutable("/bin/bash");
+        description.setArguments(scriptsBasePath+"clear_all_queries.sh");
+        description.setStdout("clear_all_queries-stdout.txt");
+        description.setStderr("clear_all_queries-stderr.txt");
+
+        return description;
+    }
+    
+    private JobDescription createClearUserJobDescription(ClearUserJob job) { 
+        System.out.println("Clearing all jobs of user "+job.getUsername());
+
+        // We can now create a JobDescription for the job we want to run.
+        JobDescription description = new JobDescription();
+        description.setQueueName("multi");
+        description.setExecutable("/bin/bash");
+        description.setArguments(scriptsBasePath+"clear_user_queries.sh", job.getUsername());
+        description.setStdout("clear_user_queries-stdout.txt");
+        description.setStderr("clear_user_queries-stderr.txt");
+       
+        return description;
+    }
+    
+    private JobDescription createRebuildDatabaseJobDescription(RebuildDatabaseJob job) { 
+        System.out.println("Rebuilding database");
+
+        // We can now create a JobDescription for the job we want to run.
+        JobDescription description = new JobDescription();
+        description.setQueueName("multi");
+        description.setExecutable("/bin/bash");
+        description.setArguments(scriptsBasePath+"rebuild_database.sh");
+        description.setStdout("rebuild_database-stdout.txt");
+        description.setStderr("rebuild_database-stderr.txt");
+               
+        return description;
+    }
+    
+    private String createAndSubmitJob(GenericJob newJob) {         
+        JobDescription description = null;
+        if (newJob instanceof QueryJob) {            
+            description = createQueryJobDescription((QueryJob)newJob);
+        } else if (newJob instanceof ClearAllJob) {            
+            description = createClearAllJobDescription((ClearAllJob)newJob);
+        } else if (newJob instanceof ClearUserJob) {            
+            description = createClearUserJobDescription((ClearUserJob)newJob);
+        } else if (newJob instanceof RebuildDatabaseJob) {            
+            description = createRebuildDatabaseJobDescription((RebuildDatabaseJob)newJob);
+        } else { 
+            failedQuery(newJob, new Exception("Unknown Job type"));
+            return "FAILED"; 
+        }
         
         try {
             Job job = null;
@@ -117,24 +189,24 @@ public class QueryBuilderDaemon {
                 job = jobs.submitJob(scheduler, description);
             }
             
-            query.setJob(job);
-            running.add(query);
+            newJob.setJob(job);
+            running.add(newJob);
             return "OK";
         } catch (Exception e) {
-            failedQuery(query, e);
+            failedQuery(newJob, e);
             return "FAILED";
         }
     }
 
-    private void queryDone(Query query) {
+    private void queryDone(QueryJob query) {
         System.out.println("Finished job " + query.getID());
         running.remove(query);
         finishedQueries.incrementAndGet();
     }
 
-    private void failedQuery(Query query, Exception e) { 
+    private void failedQuery(GenericJob query, Exception e) { 
 
-        System.out.println("Failed job " + query.getID() + " " + e);
+        // System.out.println("Failed job " + query.getID() + " " + e);
         
         if (e != null) { 
             e.printStackTrace();
@@ -150,15 +222,15 @@ public class QueryBuilderDaemon {
             return;
         }
 
-        Query [] tmp;
+        QueryJob [] tmp;
         
         synchronized (running) {
-            tmp = running.toArray(new Query[running.size()]); 
+            tmp = running.toArray(new QueryJob[running.size()]); 
         }
         
         for (int i=0;i<tmp.length;i++) {
             
-            Query q = tmp[i]; 
+            QueryJob q = tmp[i]; 
             
             if (q != null) { 
                 
