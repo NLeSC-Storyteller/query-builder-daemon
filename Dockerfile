@@ -5,11 +5,12 @@ VOLUME /data
 COPY . /src/query-builder-daemon
 
 WORKDIR /src/query-builder-daemon/scripts/
-RUN chmod +x storyteller.sh
-RUN chmod +x update_queries.py
+RUN chmod +x *.sh
+RUN chmod +x *.py
 
 WORKDIR /src/query-builder-daemon
 RUN chmod +x gradlew
+RUN sync
 RUN ./gradlew installDist
 
 WORKDIR /src/query-builder-daemon/build/install/query-builder-daemon/bin
