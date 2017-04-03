@@ -90,12 +90,12 @@ public class QueryBuilderDaemon {
         
         post("/clearall", (req, res) -> {
             String password = req.queryParams("password");
-            
+
             if (password == superSecretAdminPassword) {
                 return createAndSubmitJob(new ClearAllJob());            
             } else { 
                return "INVALID";
-            }         
+            }
         });
         
         post("/clearuser", (req, res) -> {
@@ -105,7 +105,7 @@ public class QueryBuilderDaemon {
                 return createAndSubmitJob(new ClearUserJob(username));
             } else { 
                return "INVALID";
-            }           
+            }
         });
         
         post("/rebuild", (req, res) -> {
