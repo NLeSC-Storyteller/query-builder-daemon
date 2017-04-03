@@ -53,6 +53,7 @@ public class QueryBuilderDaemon {
     private AtomicInteger failedQueries = new AtomicInteger(0);
 
     private String scriptsBasePath = "/src/query-builder-daemon/scripts/";
+    private String superSecretAdminPassword = "correcthorsebatterystaple";
     
     public QueryBuilderDaemon() throws XenonException, URISyntaxException { 
         
@@ -87,8 +88,14 @@ public class QueryBuilderDaemon {
             }
         });
         
-        post("/clearall", (req, res) -> {            
-            return createAndSubmitJob(new ClearAllJob());            
+        post("/clearall", (req, res) -> {
+            String password = req.queryParams("password");
+            
+            if (password == superSecretAdminPassword) {
+                return createAndSubmitJob(new ClearAllJob());            
+            } else { 
+               return "INVALID";
+            }         
         });
         
         post("/clearuser", (req, res) -> {
@@ -102,7 +109,13 @@ public class QueryBuilderDaemon {
         });
         
         post("/rebuild", (req, res) -> {
-            return createAndSubmitJob(new RebuildDatabaseJob());       
+            String password = req.queryParams("password");
+
+            if (password == superSecretAdminPassword) {
+                return createAndSubmitJob(new RebuildDatabaseJob());            
+            } else { 
+               return "INVALID";
+            }    
         });
     }
 
