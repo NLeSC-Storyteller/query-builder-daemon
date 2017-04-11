@@ -76,13 +76,13 @@ public class QueryBuilderDaemon {
           return getStatus();  
         }); 
         
-        post("/submit", (req, res) -> {
-            
+        post("/submit", (req, res) -> {            
             String id = req.queryParams("id");
             String query = req.queryParams("query");
+            String limit = req.queryParams("limit");
 
             if (id != null && query != null) { 
-                return createAndSubmitJob(new QueryJob(id, query));
+                return createAndSubmitJob(new QueryJob(id, query, limit));
             } else { 
                return "INVALID";
             }
@@ -125,13 +125,13 @@ public class QueryBuilderDaemon {
     }
     
     private JobDescription createQueryJobDescription(QueryJob job) { 
-        System.out.println("Submitting query " + job.getID() + "\"" + job.getQuery() + "\"");
+        System.out.println("Submitting query " + job.getID() + "\"" + job.getQuery() + "\"" + job.getLimit() + "\"");
 
         // We can now create a JobDescription for the job we want to run.
         JobDescription description = new JobDescription();
         description.setQueueName("multi");
         description.setExecutable("/bin/bash");
-        description.setArguments(scriptsBasePath+"storyteller.sh", job.getID(), job.getQuery());
+        description.setArguments(scriptsBasePath+"storyteller.sh", job.getID(), job.getQuery(), job.getLimit());
         description.setStdout(job.getID() + "-stdout.txt");
         description.setStderr(job.getID() + "-stderr.txt");
        

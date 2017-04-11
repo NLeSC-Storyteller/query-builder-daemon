@@ -22,11 +22,13 @@ public class QueryJob extends GenericJob {
     
     private String id;
     private String query;
+    private String limit;
     
-    public QueryJob(String id, String query) {
+    public QueryJob(String id, String query, String limit) {
         super();
         this.id = id;
         this.query = query;
+        this.limit = limit;
     }
     
     public String getID() { 
@@ -35,5 +37,9 @@ public class QueryJob extends GenericJob {
     
     public String getQuery() { 
         return query;
+    }
+    
+    public String getLimit() { 
+        return limit;
     }
 }
