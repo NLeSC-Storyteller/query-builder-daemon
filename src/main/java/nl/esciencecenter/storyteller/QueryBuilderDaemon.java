@@ -79,10 +79,10 @@ public class QueryBuilderDaemon {
         post("/submit", (req, res) -> {            
             String id = req.queryParams("id");
             String query = req.queryParams("query");
-            String limit = req.queryParams("limit");
+            String mention_limit = req.queryParams("mention_limit");
 
             if (id != null && query != null) { 
-                return createAndSubmitJob(new QueryJob(id, query, limit));
+                return createAndSubmitJob(new QueryJob(id, query, mention_limit));
             } else { 
                return "INVALID";
             }
